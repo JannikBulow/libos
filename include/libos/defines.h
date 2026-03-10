@@ -54,6 +54,8 @@ typedef os_i32      os_result;
 
 typedef void*       os_handle; // Can in theory hold any typed handle as long as your compiler is chill with implicit casts. You may want to enable the LIBOS_SUPERSAFE_HANDLES feature if you unironically prefer this.
 
+os_result __os_set_and_return_result(os_result result); // INTERNAL USE ONLY. Sets the last error in the current thread to `result` if `result` is less than 0, then returns the same result.
+
 #ifdef __cplusplus
 }
 #endif

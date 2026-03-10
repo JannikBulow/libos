@@ -9,6 +9,10 @@ set(HEADERS
     include/libos/memory.h
 )
 
+set(SOURCES
+    src/common/error.c
+)
+
 set(WINDOWS_SOURCES
     src/windows/memory.c
 )
@@ -16,11 +20,11 @@ set(WINDOWS_SOURCES
 set(UNIX_SOURCES)
 
 if(WIN32)
-    set(SOURCES ${WINDOWS_SOURCES})
+    list(APPEND SOURCES ${WINDOWS_SOURCES})
 elseif(UNIX)
-    set(SOURCES ${UNIX_SOURCES})
+    list(APPEND SOURCES ${UNIX_SOURCES})
 else()
-    message(FATAL_ERROR "Can't compile for whatever fuckass platform you're on")
+    message(FATAL_ERROR "This library can't compile for whatever fuckass platform you're on")
 endif()
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
