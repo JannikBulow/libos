@@ -4,6 +4,7 @@ project(libos C)
 include(GenerateExportHeader)
 
 set(HEADERS
+    include/libos/_/windows_helpers.h
     include/libos/defines.h
     include/libos/error.h
     include/libos/memory.h
@@ -14,6 +15,8 @@ set(SOURCES
 )
 
 set(WINDOWS_SOURCES
+    src/windows/error.c
+    src/windows/helpers.c
     src/windows/memory.c
 )
 
