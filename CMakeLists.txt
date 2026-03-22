@@ -10,7 +10,7 @@ set(HEADERS
     include/libos/memory.h
 )
 
-set(SOURCES
+set(COMMON_SOURCES
     src/common/error.c
 )
 
@@ -23,9 +23,9 @@ set(WINDOWS_SOURCES
 set(UNIX_SOURCES)
 
 if(WIN32)
-    list(APPEND SOURCES ${WINDOWS_SOURCES})
+    set(SOURCES ${COMMON_SOURCES} ${WINDOWS_SOURCES})
 elseif(UNIX)
-    list(APPEND SOURCES ${UNIX_SOURCES})
+    set(SOURCES ${COMMON_SOURCES} ${UNIX_SOURCES})
 else()
     message(FATAL_ERROR "This library can't compile for whatever fuckass platform you're on")
 endif()
