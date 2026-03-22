@@ -7,11 +7,13 @@ set(HEADERS
     include/libos/_/windows_helpers.h
     include/libos/defines.h
     include/libos/error.h
+    include/libos/init.h
     include/libos/memory.h
 )
 
 set(COMMON_SOURCES
     src/common/error.c
+    src/common/init.c
 )
 
 set(WINDOWS_SOURCES
