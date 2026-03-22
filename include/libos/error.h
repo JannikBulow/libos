@@ -15,7 +15,7 @@ enum os_error {
     OS_OK                       = 0,     // Indicates successful operation.
 
     OS_UNKNOWN_ERROR            = -1,   // Indicates an internal error that couldn't be accurately portrayed using an os_error. This will be used sparsely.
-    OS_ERROR_INVALID_ARGUMENT   = -2,   // Indicates an invalid argument provided by the user. Common causes include NULL pointers and mismatching flags.
+    OS_ERROR_INVALID_ARGUMENT   = -2,   // Indicates an invalid argument provided by the user. Common causes include NULL pointers and mismatching intents.
     OS_ERROR_INVALID_STATE      = -3,   // Indicates an invalid internal state usually caused by memory corruption or incompetent developers (both from the library developers and users).
 
     OS_ERROR_NO_MEMORY          = -10,  // Indicates that the host system is out of memory. This is never recoverable, and it's recommended to just clean up and exit the program when encountered.
