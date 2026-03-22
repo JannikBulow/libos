@@ -15,6 +15,12 @@
 extern "C" {
 #endif
 
+#ifdef LIBOS_NULLCHECK_OUT_POINTERS
+#define __LIBOS_OUT(ptr) if (ptr) *ptr
+#else
+#define __LIBOS_OUT(ptr) *ptr
+#endif
+
 //TODO: Remove libc dependency from all headers eventually, then remove it from sources in the far future.
 //      Once the libc dependency is gone, maybe use this header for all the declarations of libc-ish utilities.
 //      Just spitting ideas for now.
