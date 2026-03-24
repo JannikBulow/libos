@@ -127,7 +127,7 @@ os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size,
 }
 
 os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_intents) {
-    WINBOOL res;
+    BOOL res;
     if (free_intents == OS_MEM_DECOMMIT) {
         res = VirtualFree(address, size, MEM_DECOMMIT);
     } else if (free_intents == OS_MEM_RELEASE) {
