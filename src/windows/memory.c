@@ -91,7 +91,7 @@ os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size,
     DWORD alloc = 0;
     DWORD prot = 0;
 
-    os_result res = translate_protect_intents(&prot, alloc_intents);
+    os_result res = translate_protect_intents(&prot, protect_intents);
     if (res != OS_OK) return res;
 
     if (alloc_intents & OS_MEM_LARGE_PAGES) {
