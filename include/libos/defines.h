@@ -48,7 +48,15 @@ typedef os_u16          os_char16;
 typedef os_u32          os_char32;
 
 typedef size_t          os_size;
+#ifdef PLATFORM_WINDOWS
+#ifdef BITS_64
+typedef __int64         os_ssize;
+#else
+typedef int             os_ssize;
+#endif
+#else
 typedef ssize_t         os_ssize;
+#endif
 
 typedef uintptr_t       os_uptr;
 typedef intptr_t        os_iptr;
