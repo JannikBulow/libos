@@ -131,12 +131,12 @@ os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_inte
     if (free_intents == OS_MEM_DECOMMIT) {
         res = VirtualFree(address, size, MEM_DECOMMIT);
     } else if (free_intents == OS_MEM_RELEASE) {
-        res = VirtualFree(address, size, MEM_RELEASE);
+        res = VirtualFree(address, 0, MEM_RELEASE);
     } else {
         return OS_ERROR_INVALID_ARGUMENT;
     }
 
-    if (res == 0) { // nonzero = error for VirtualFree
+    if (res == 0) { // zero = error for VirtualFree
         DWORD error = GetLastError();
         switch (error) {
             case ERROR_INVALID_PARAMETER:
