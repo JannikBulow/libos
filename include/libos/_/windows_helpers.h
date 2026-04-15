@@ -18,8 +18,8 @@ extern "C" {
 
 typedef LPWSTR microsoft_string;
 
-LIBOS_EXPORT microsoft_string __os_string_to_microsoft_string(os_cstring s, microsoft_string (*alloc)(os_size), void (*dealloc)(microsoft_string));
-LIBOS_EXPORT os_string __os_microsoft_string_to_string(microsoft_string s, os_string (*alloc)(os_size), void (*dealloc)(os_string));
+LIBOS_EXPORT microsoft_string os_string_to_microsoft_string__(os_cstring s, microsoft_string (*alloc)(os_size), void (*dealloc)(microsoft_string));
+LIBOS_EXPORT os_string os_microsoft_string_to_string__(microsoft_string s, os_string (*alloc)(os_size), void (*dealloc)(os_string));
 
 #ifdef __cplusplus
 }

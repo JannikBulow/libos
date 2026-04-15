@@ -7,14 +7,14 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-os_string __os_allocate_message(os_size size);
+os_string os_allocate_message__(os_size size);
 
 os_i64 os_last_platform_error(void) {
     return (os_i64) GetLastError();
 }
 
 os_string os_platform_error_getname(os_i64 error) {
-    return __os_allocate_message(0);
+    return os_allocate_message__(0);
 }
 
 os_string os_platform_error_describe(os_i64 error) {
@@ -31,9 +31,9 @@ os_string os_platform_error_describe(os_i64 error) {
         0,
         NULL
     );
-    os_string desc = __os_microsoft_string_to_string(microsoft_desc, __os_allocate_message, os_free_message);
+    os_string desc = os_microsoft_string_to_string__(microsoft_desc, os_allocate_message__, os_free_message);
     LocalFree(microsoft_desc);
 
-    if (desc == NULL) return __os_allocate_message(0);
+    if (desc == NULL) return os_allocate_message__(0);
     return desc;
 }
