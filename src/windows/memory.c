@@ -150,3 +150,30 @@ os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_inte
 
     return OS_OK;
 }
+
+os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents protect_intents) {
+    DWORD prot = 0;
+    DWORD old_prot;
+
+    os_result res = translate_protect_intents(&prot, protect_intents);
+    if (res != OS_OK) return res;
+
+    BOOL wres = VirtualProtect(address, size, prot, &old_prot);
+    if (wres == 0) { // zero = error for VirtualProtect
+        DWORD error = GetLastError();
+        switch (error) {
+            case ERROR_INVALID_PARAMETER:
+            case ERROR_BAD_ARGUMENTS:
+            case ERROR_INVALID_ADDRESS:
+                return OS_ERROR_INVALID_ARGUMENT;
+
+            case ERROR_ACCESS_DENIED:
+            case ERROR_NOACCESS:
+                return OS_ERROR_ACCESS_DENIED;
+
+            default: return OS_UNKNOWN_ERROR;
+        }
+    }
+
+    return OS_OK;
+}

@@ -47,6 +47,7 @@ LIBOS_EXPORT os_size os_mem_aligntolargepagesize(os_size x);
 
 LIBOS_EXPORT os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size, os_mem_alloc_intents alloc_intents, os_mem_protect_intents protect_intents);
 LIBOS_EXPORT os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_intents);
+LIBOS_EXPORT os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents protect_intents);
 
 #ifdef __cplusplus
 }
