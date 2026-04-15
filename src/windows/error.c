@@ -31,7 +31,11 @@ os_string os_platform_error_describe(os_i64 error) {
         0,
         NULL
     );
-    os_string desc = os_microsoft_string_to_string__(microsoft_desc, os_allocate_message__, os_free_message);
+
+    os_i32 length = os_microsoft_string_to_string__(microsoft_desc, NULL, 0);
+    os_string desc = os_allocate_message__(length);
+    os_microsoft_string_to_string__(microsoft_desc, desc, length);
+
     LocalFree(microsoft_desc);
 
     if (desc == NULL) return os_allocate_message__(0);
