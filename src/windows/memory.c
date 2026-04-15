@@ -50,7 +50,7 @@ os_size os_mem_getlargepagesize(void) {
 
 size_t os_mem_aligntopagesize(size_t x) {
 #ifdef LIBOS_OPT_ASSUME_POW2_PAGESIZE
-    return aligntopagesize_pow2(x, si.dwPageSize);
+    return alignto_pow2(x, si.dwPageSize);
 #else
     return aligntopagesize(x, si.dwPageSize);
 #endif
@@ -58,7 +58,7 @@ size_t os_mem_aligntopagesize(size_t x) {
 
 os_size os_mem_aligntolargepagesize(os_size x) {
 #ifdef LIBOS_OPT_ASSUME_POW2_PAGESIZE
-    return aligntopagesize_pow2(x, GetLargePageMinimum())
+    return alignto_pow2(x, GetLargePageMinimum());
 #else
     return aligntopagesize(x, GetLargePageMinimum());
 #endif
