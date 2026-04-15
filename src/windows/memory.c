@@ -83,7 +83,7 @@ static os_result translate_protect_intents(DWORD* out_flags, os_mem_protect_inte
             ((intents & OS_MEM_PROTECT_READWRITE) ? 2 : 0) |
             ((intents & OS_MEM_PROTECT_EXECUTE) ? 4 : 0);
 
-    __LIBOS_OUT(out_flags) = win_protect_table[mask];
+    LIBOS_OUT__(out_flags) = win_protect_table[mask];
     return OS_OK;
 }
 
@@ -170,6 +170,27 @@ os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents pro
             case ERROR_ACCESS_DENIED:
             case ERROR_NOACCESS:
                 return OS_ERROR_ACCESS_DENIED;
+
+            default: return OS_UNKNOWN_ERROR;
+        }
+    }
+
+    return OS_OK;
+}
+
+os_result os_mem_flush_instruction_cache(const void* address, os_size size) {
+    BOOL wres = FlushInstructionCache(GetCurrentProcess(), address, size);
+    if (wres == 0) { // zero = error for FlushInstructionCache
+        DWORD error = GetLastError();
+        switch (error) {
+            case ERROR_INVALID_HANDLE:
+                return OS_ERROR_INVALID_STATE; // how the FUCK is GetCurrentProcess() invalid?
+
+            case ERROR_ACCESS_DENIED:
+                return OS_ERROR_ACCESS_DENIED;
+
+            case ERROR_INVALID_ADDRESS:
+                return OS_ERROR_NOT_FOUND; //?
 
             default: return OS_UNKNOWN_ERROR;
         }

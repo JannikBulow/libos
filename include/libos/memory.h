@@ -49,6 +49,8 @@ LIBOS_EXPORT os_result os_mem_allocate(void** out_pointer, void* start_address, 
 LIBOS_EXPORT os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_intents);
 LIBOS_EXPORT os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents protect_intents);
 
+LIBOS_EXPORT os_result os_mem_flush_instruction_cache(const void* address, os_size size);
+
 #ifdef __cplusplus
 }
 #endif
