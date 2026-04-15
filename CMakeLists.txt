@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.29)
 project(libos C)
 
+option(LIBOS_OPT_ASSUME_POW2_PAGESIZE "Assume pagesize is always power-of-two" ON)
+option(LIBOS_NULL_CHECK_OUT_POINTERS "Always NULL check pointers used for output" ON)
+
 include(GenerateExportHeader)
 
 set(HEADERS
@@ -45,6 +48,18 @@ generate_export_header(libos-shared
 )
 
 target_compile_definitions(libos-static PUBLIC LIBOS_STATIC_DEFINE)
+
+target_compile_definitions(libos-shared
+    PUBLIC
+    $<$<BOOL:${LIBOS_OPT_ASSUME_POW2_PAGESIZE}>:LIBOS_OPT_ASSUME_POW2_PAGESIZE>
+    $<$<BOOL:${LIBOS_NULL_CHECK_OUT_POINTERS}>:LIBOS_NULL_CHECK_OUT_POINTERS>
+)
+
+target_compile_definitions(libos-static
+    PUBLIC
+    $<$<BOOL:${LIBOS_OPT_ASSUME_POW2_PAGESIZE}>:LIBOS_OPT_ASSUME_POW2_PAGESIZE>
+    $<$<BOOL:${LIBOS_NULL_CHECK_OUT_POINTERS}>:LIBOS_NULL_CHECK_OUT_POINTERS>
+)
 
 target_include_directories(libos-shared PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
