@@ -92,11 +92,11 @@ os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size,
     DWORD prot = 0;
 
     os_result res = translate_protect_intents(&prot, protect_intents);
-    if (res != OS_OK) return res;
+    if (res != OS_OK) return os_set_and_return_result__(res);
 
     if (alloc_intents & OS_MEM_LARGE_PAGES) {
         if (!((alloc_intents & OS_MEM_RESERVE) && (alloc_intents & OS_MEM_COMMIT))) {
-            return OS_ERROR_INVALID_ARGUMENT;
+            return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
         }
         alloc = MEM_RESERVE | MEM_COMMIT | MEM_LARGE_PAGES;
     } else {
@@ -104,26 +104,26 @@ os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size,
         if (alloc_intents & OS_MEM_COMMIT) alloc |= MEM_COMMIT;
     }
 
-    if (alloc == 0) return OS_ERROR_INVALID_ARGUMENT;
+    if (alloc == 0) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
     void* pointer = VirtualAlloc(start_address, size, alloc, prot);
     if (pointer == NULL) {
         DWORD error = GetLastError();
         switch (error) {
-            case ERROR_NOT_ENOUGH_MEMORY: return OS_ERROR_NO_MEMORY;
+            case ERROR_NOT_ENOUGH_MEMORY: return os_set_and_return_result__(OS_ERROR_NO_MEMORY);
 
             case ERROR_BAD_ARGUMENTS:
             case ERROR_INVALID_PARAMETER:
             case ERROR_INVALID_ADDRESS:
-                return OS_ERROR_INVALID_ARGUMENT;
+                return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
-            default: return OS_UNKNOWN_ERROR;
+            default: return os_set_and_return_result__(OS_UNKNOWN_ERROR);
         }
     }
 
     *out_pointer = pointer;
 
-    return OS_OK;
+    return os_set_and_return_result__(OS_OK);
 }
 
 os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_intents) {
@@ -133,7 +133,7 @@ os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_inte
     } else if (free_intents == OS_MEM_RELEASE) {
         res = VirtualFree(address, 0, MEM_RELEASE);
     } else {
-        return OS_ERROR_INVALID_ARGUMENT;
+        return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
     }
 
     if (res == 0) { // zero = error for VirtualFree
@@ -142,13 +142,13 @@ os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_inte
             case ERROR_INVALID_PARAMETER:
             case ERROR_BAD_ARGUMENTS:
             case ERROR_INVALID_ADDRESS:
-                return OS_ERROR_INVALID_ARGUMENT;
+                return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
-            default: return OS_UNKNOWN_ERROR;
+            default: return os_set_and_return_result__(OS_UNKNOWN_ERROR);
         }
     }
 
-    return OS_OK;
+    return os_set_and_return_result__(OS_OK);
 }
 
 os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents protect_intents) {
@@ -156,7 +156,7 @@ os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents pro
     DWORD old_prot;
 
     os_result res = translate_protect_intents(&prot, protect_intents);
-    if (res != OS_OK) return res;
+    if (res != OS_OK) return os_set_and_return_result__(res);
 
     BOOL wres = VirtualProtect(address, size, prot, &old_prot);
     if (wres == 0) { // zero = error for VirtualProtect
@@ -165,17 +165,17 @@ os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents pro
             case ERROR_INVALID_PARAMETER:
             case ERROR_BAD_ARGUMENTS:
             case ERROR_INVALID_ADDRESS:
-                return OS_ERROR_INVALID_ARGUMENT;
+                return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
             case ERROR_ACCESS_DENIED:
             case ERROR_NOACCESS:
-                return OS_ERROR_ACCESS_DENIED;
+                return os_set_and_return_result__(OS_ERROR_ACCESS_DENIED);
 
-            default: return OS_UNKNOWN_ERROR;
+            default: return os_set_and_return_result__(OS_UNKNOWN_ERROR);
         }
     }
 
-    return OS_OK;
+    return os_set_and_return_result__(OS_OK);
 }
 
 os_result os_mem_flush_instruction_cache(const void* address, os_size size) {
@@ -184,17 +184,17 @@ os_result os_mem_flush_instruction_cache(const void* address, os_size size) {
         DWORD error = GetLastError();
         switch (error) {
             case ERROR_INVALID_HANDLE:
-                return OS_ERROR_INVALID_STATE; // how the FUCK is GetCurrentProcess() invalid?
+                return os_set_and_return_result__(OS_ERROR_INVALID_STATE); // how the FUCK is GetCurrentProcess() invalid?
 
             case ERROR_ACCESS_DENIED:
-                return OS_ERROR_ACCESS_DENIED;
+                return os_set_and_return_result__(OS_ERROR_ACCESS_DENIED);
 
             case ERROR_INVALID_ADDRESS:
-                return OS_ERROR_NOT_FOUND; //?
+                return os_set_and_return_result__(OS_ERROR_NOT_FOUND); //?
 
-            default: return OS_UNKNOWN_ERROR;
+            default: return os_set_and_return_result__(OS_UNKNOWN_ERROR);
         }
     }
 
-    return OS_OK;
+    return os_set_and_return_result__(OS_OK);
 }
