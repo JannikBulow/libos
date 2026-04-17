@@ -11,7 +11,7 @@ _Thread_local os_result __os_last_error;
 os_string os_allocate_message__(os_size length_bytes);
 os_string os_copy_message__(os_string message);
 
-os_result os_set_and_return_error__(os_result result) {
+os_result os_set_and_return_result__(os_result result) {
     if (result < 0) __os_last_error = result;
     return result;
 }
