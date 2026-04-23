@@ -102,5 +102,7 @@ os_result os_dynlib_get_symbol(os_dynlib* lib, os_cstring symbol, void** out_sym
         }
     }
 
+    LIBOS_OUT__(out_symbol) = address;
+
     return os_set_and_return_result__(OS_OK);
 }
