@@ -21,7 +21,7 @@ os_result os_dynlib_load(os_dynlib** out_lib, os_cstring path, os_dynlib_load_in
 
     HANDLE heap = GetProcessHeap();
     os_i32 length = os_string_to_microsoft_string__(path, NULL, 0);
-    microsoft_string microsoft_path = HeapAlloc(heap, HEAP_GENERATE_EXCEPTIONS, length);
+    microsoft_string microsoft_path = HeapAlloc(heap, HEAP_GENERATE_EXCEPTIONS, length * sizeof(WCHAR));
     os_string_to_microsoft_string__(path, microsoft_path, length);
 
     HMODULE module = LoadLibraryW(microsoft_path);
