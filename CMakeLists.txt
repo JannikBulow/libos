@@ -9,6 +9,7 @@ include(GenerateExportHeader)
 set(HEADERS
     include/libos/_/windows_helpers.h
     include/libos/defines.h
+    include/libos/dynlib.h
     include/libos/error.h
     include/libos/init.h
     include/libos/memory.h
@@ -20,6 +21,7 @@ set(COMMON_SOURCES
 )
 
 set(WINDOWS_SOURCES
+    src/windows/dynlib.c
     src/windows/error.c
     src/windows/helpers.c
     src/windows/memory.c

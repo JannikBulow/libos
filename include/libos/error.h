@@ -12,17 +12,20 @@ extern "C" {
 // If any of these values are negated (in this case positive), it indicates some sort of success, but with a minor problem.
 // This means that positive values should be treated as warnings rather than errors.
 enum os_error {
-    OS_OK                       = 0,     // Indicates successful operation.
+    OS_OK                           = 0,    // Indicates successful operation.
 
-    OS_UNKNOWN_ERROR            = -1,   // Indicates an internal error that couldn't be accurately portrayed using an os_error. This will be used sparsely.
-    OS_ERROR_INVALID_ARGUMENT   = -2,   // Indicates an invalid argument provided by the user. Common causes include NULL pointers and mismatching intents.
-    OS_ERROR_INVALID_STATE      = -3,   // Indicates an invalid internal state usually caused by memory corruption or incompetent developers (both from the library developers and users).
+    OS_UNKNOWN_ERROR                = -1,   // Indicates an internal error that couldn't be accurately portrayed using an os_error. This will be used sparsely.
+    OS_ERROR_INVALID_ARGUMENT       = -2,   // Indicates an invalid argument provided by the user. Common causes include NULL pointers and mismatching intents.
+    OS_ERROR_INVALID_STATE          = -3,   // Indicates an invalid internal state usually caused by memory corruption or incompetent developers (both from the library developers and users).
 
-    OS_ERROR_NO_MEMORY          = -10,  // Indicates that the host system is out of memory. This is never recoverable, and it's recommended to just clean up and exit the program when encountered.
-    OS_ERROR_ACCESS_DENIED      = -11,  // Indicates that a resource was found, but the platform-dependent user or current process is missing permissions to access it.
-    OS_ERROR_NOT_FOUND          = -12,  // Indicates that a resource could not be found when the intent was to access it without creation.
-    OS_ERROR_ALREADY_EXISTS     = -13,  // Indicates that a resource already exists when the intent was to explicitly create a new one.
-    OS_ERROR_NOT_SUPPORTED      = -14,  // Indicates that the current platform cannot support an intent. If negated, the provided intents were fulfilled using less than ideal workarounds.
+    OS_ERROR_NO_MEMORY              = -10,  // Indicates that the host system is out of memory. This is never recoverable, and it's recommended to just clean up and exit the program when encountered.
+    OS_ERROR_ACCESS_DENIED          = -11,  // Indicates that a resource was found, but the platform-dependent user or current process is missing permissions to access it.
+    OS_ERROR_NOT_FOUND              = -12,  // Indicates that a resource could not be found when the intent was to access it without creation.
+    OS_ERROR_ALREADY_EXISTS         = -13,  // Indicates that a resource already exists when the intent was to explicitly create a new one.
+    OS_ERROR_NOT_SUPPORTED          = -14,  // Indicates that the current platform cannot support an intent. If negated, the provided intents were fulfilled using less than ideal workarounds.
+    OS_ERROR_INVALID_FORMAT         = -15,  // Indicates bad binary format (wrong architecture, corrupt, etc.).
+    OS_ERROR_INITIALIZATION_FAILED  = -16,  // Indicates that some sort of initializer failed (for example DllMain when loading a windows dynlib).
+    OS_ERROR_DEPENDENCY_FAILED      = -17,  // Indicates that a required dependency failed to load.
 };
 
 LIBOS_EXPORT os_i64 os_last_platform_error(void);                // Returns the latest platform-dependent error code in the form of the largest possible integer.
