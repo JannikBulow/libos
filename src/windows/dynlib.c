@@ -62,9 +62,16 @@ os_result os_dynlib_load(os_dynlib** out_lib, os_cstring path, os_dynlib_load_in
 os_result os_dynlib_unload(os_dynlib* lib) {
     if (!lib) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
-    if (lib->nodelete) return os_set_and_return_result__(OS_OK);
+    HANDLE heap = GetProcessHeap();
 
-    BOOL result = FreeLibrary(lib->module);
+    HMODULE module = lib->module;
+    os_bool nodelete = lib->nodelete;
+
+    HeapFree(heap, 0, lib);
+
+    if (nodelete) return os_set_and_return_result__(OS_OK);
+
+    BOOL result = FreeLibrary(module);
     if (result == 0) {
         DWORD error = GetLastError();
         switch (error) {
