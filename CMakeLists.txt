@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.26)
 project(libos C)
 
 option(LIBOS_OPT_ASSUME_POW2_PAGESIZE "Assume pagesize is always power-of-two" ON)
