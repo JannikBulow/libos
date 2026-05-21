@@ -9,7 +9,7 @@
 _Thread_local os_result os_last_error__;
 
 os_string os_allocate_message__(os_size length_bytes);
-os_string os_copy_message__(os_string message);
+os_string os_copy_message__(os_cstring message);
 
 os_result os_set_and_return_result__(os_result result) {
     if (result < 0) os_last_error__ = result;
@@ -48,7 +48,7 @@ os_string os_allocate_message__(os_size length_bytes) {
     return message;
 }
 
-os_string os_copy_message__(os_string message) {
+os_string os_copy_message__(os_cstring message) {
     os_size length_bytes = strlen(message);
     os_string copy = os_allocate_message__(length_bytes);
     if (copy) memcpy(copy, message, length_bytes);
