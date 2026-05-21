@@ -39,6 +39,7 @@ LIBOS_EXPORT os_string os_result_describe(os_result res);        // Returns the 
 LIBOS_EXPORT void os_free_message(os_string message);            // The library may communicate in human-readable messages (mainly to describe errors) in string form, and these strings are copied into a unique buffer to avoid the user changing the internal description of an error. So the messages must be freed using this uniform function.
 
 LIBOS_EXPORT os_result os_set_and_return_result__(os_result result); // INTERNAL USE ONLY. Sets the last error in the current thread to `result` if `result` is less than 0, then returns the same result.
+LIBOS_EXPORT os_result os_map_platform_error__(void); // INTERNAL USE ONLY. Maps the latest platform error to an os_error
 
 #ifdef __cplusplus
 }
