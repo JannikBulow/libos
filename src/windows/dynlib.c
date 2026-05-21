@@ -27,24 +27,7 @@ os_result os_dynlib_load(os_dynlib** out_lib, os_cstring path, os_dynlib_load_in
     HMODULE module = LoadLibraryW(microsoft_path);
     HeapFree(heap, 0, microsoft_path);
     if (module == NULL) {
-        DWORD error = GetLastError();
-        switch (error) {
-            case ERROR_ACCESS_DENIED:
-                return os_set_and_return_result__(OS_ERROR_ACCESS_DENIED);
-            case ERROR_NOT_ENOUGH_MEMORY:
-                return os_set_and_return_result__(OS_ERROR_NO_MEMORY);
-            case ERROR_INVALID_PARAMETER:
-                return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
-            case ERROR_MOD_NOT_FOUND:
-            case ERROR_PROC_NOT_FOUND:
-            case ERROR_DLL_NOT_FOUND:
-                return os_set_and_return_result__(OS_ERROR_NOT_FOUND);
-            case ERROR_BAD_EXE_FORMAT:
-            case ERROR_INVALID_DLL:
-                return os_set_and_return_result__(OS_ERROR_INVALID_FORMAT);
-            default:
-                return os_set_and_return_result__(OS_UNKNOWN_ERROR);
-        }
+        return os_set_and_return_result__(os_map_platform_error__());
     }
 
     os_dynlib* lib = HeapAlloc(heap, HEAP_GENERATE_EXCEPTIONS, sizeof(os_dynlib));
@@ -73,13 +56,7 @@ os_result os_dynlib_unload(os_dynlib* lib) {
 
     BOOL result = FreeLibrary(module);
     if (result == 0) {
-        DWORD error = GetLastError();
-        switch (error) {
-            case ERROR_INVALID_HANDLE:
-                return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
-            default:
-                return os_set_and_return_result__(OS_UNKNOWN_ERROR);
-        }
+        return os_set_and_return_result__(os_map_platform_error__());
     }
 
     return os_set_and_return_result__(OS_OK);
@@ -90,16 +67,7 @@ os_result os_dynlib_get_symbol(os_dynlib* lib, os_cstring symbol, void** out_sym
 
     FARPROC address = GetProcAddress(lib->module, symbol);
     if (address == NULL) {
-        DWORD error = GetLastError();
-        switch (error) {
-            case ERROR_PROC_NOT_FOUND:
-            case ERROR_MOD_NOT_FOUND:
-                return os_set_and_return_result__(OS_ERROR_NOT_FOUND);
-            case ERROR_INVALID_HANDLE:
-                return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
-            default:
-                return os_set_and_return_result__(OS_UNKNOWN_ERROR);
-        }
+        return os_set_and_return_result__(os_map_platform_error__());
     }
 
     LIBOS_OUT__(out_symbol) = address;
