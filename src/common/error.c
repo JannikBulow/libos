@@ -11,11 +11,6 @@ _Thread_local os_result os_last_error__;
 os_string os_allocate_message__(os_size length_bytes);
 os_string os_copy_message__(os_cstring message);
 
-os_result os_set_and_return_result__(os_result result) {
-    if (result < 0) os_last_error__ = result;
-    return result;
-}
-
 os_result os_last_error(void) {
     return os_last_error__;
 }
@@ -57,4 +52,9 @@ os_string os_copy_message__(os_cstring message) {
 
 void os_free_message(os_string message) {
     if (message) free(message);
+}
+
+os_result os_set_and_return_result__(os_result result) {
+    if (result < 0) os_last_error__ = result;
+    return result;
 }
