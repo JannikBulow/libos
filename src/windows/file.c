@@ -63,7 +63,7 @@ os_result os_file_get_stdfile(os_file** out_file, os_stdfile stdfile) {
         return os_set_and_return_result__(os_map_platform_error__());
     }
 
-    return os_file_from_std_handle(out_file, handle);
+    return os_set_and_return_result__(os_file_from_std_handle(out_file, duped_handle));
 }
 
 os_result os_file_set_stdfile(os_stdfile stdfile, os_file* file) {
