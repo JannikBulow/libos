@@ -4,6 +4,7 @@
 
 #include "libos/file.h"
 
+#include <fcntl.h>
 #include <stdlib.h>
 
 struct os_file {
@@ -425,5 +426,37 @@ os_result os_file_get_platform_handle(os_file* file, void** out_platform_handle)
     if (!file) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
     LIBOS_OUT__(out_platform_handle) = (void*) file->handle;
+    return os_set_and_return_result__(OS_OK);
+}
+
+os_result os_file_to_cfile(FILE** out_cfile, os_file* file, const char* mode) {
+    if (!out_cfile || !file || !mode) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
+    if (file->handle == INVALID_HANDLE_VALUE || file->handle == NULL) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
+
+    int flags = 0;
+    if (strchr(mode, 'r')) flags |= _O_RDONLY;
+    if (strchr(mode, 'w') || strchr(mode, 'a')) flags |= _O_WRONLY;
+    if (strchr(mode, '+')) flags = (flags & ~(_O_RDONLY | _O_WRONLY)) | _O_RDWR;
+    if (strchr(mode, 'b')) flags |= _O_BINARY;
+    else flags |= _O_TEXT;
+
+    HANDLE duped_handle;
+    if (DuplicateHandle(GetCurrentProcess(), file->handle, GetCurrentProcess(), &duped_handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
+        return os_set_and_return_result__(os_map_platform_error__());
+    }
+
+    int fd = _open_osfhandle((intptr_t) duped_handle, flags); // I hate CRT
+    if (fd == -1) {
+        CloseHandle(duped_handle);
+        return os_set_and_return_result__(OS_UNKNOWN_ERROR); //TODO: research errors here
+    }
+
+    FILE* cfile = _fdopen(fd, mode);
+    if (cfile == NULL) {
+        _close(fd);
+        return os_set_and_return_result__(OS_UNKNOWN_ERROR); //TODO: research errors here too
+    }
+
+    *out_cfile = cfile;
     return os_set_and_return_result__(OS_OK);
 }

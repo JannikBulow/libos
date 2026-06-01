@@ -6,6 +6,8 @@
 #include "libos/defines.h"
 #include "libos/error.h"
 
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 
@@ -98,6 +100,8 @@ LIBOS_EXPORT os_result os_file_delete(os_cstring path);
 LIBOS_EXPORT os_result os_file_rename(os_cstring path, os_cstring new_path);
 
 LIBOS_EXPORT os_result os_file_get_platform_handle(os_file* file, void** out_platform_handle);
+
+LIBOS_EXPORT os_result os_file_to_cfile(FILE** out_cfile, os_file* file, const char* mode);
 
 #ifdef __cplusplus
 }
