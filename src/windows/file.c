@@ -54,12 +54,12 @@ static os_result os_file_from_std_handle(os_file** out_file, HANDLE handle) {
 os_result os_file_get_stdfile(os_file** out_file, os_stdfile stdfile) {
     if (!out_file) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
-    HANDLE stdhandle;
-    os_result res = get_std_handle(NULL, &stdhandle, stdfile);
+    HANDLE raw_handle;
+    os_result res = get_std_handle(NULL, &raw_handle, stdfile);
     if (res != OS_OK) return os_set_and_return_result__(res);
 
-    HANDLE handle;
-    if (DuplicateHandle(GetCurrentProcess(), stdhandle, GetCurrentProcess(), &handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
+    HANDLE duped_handle;
+    if (DuplicateHandle(GetCurrentProcess(), raw_handle, GetCurrentProcess(), &duped_handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
         return os_set_and_return_result__(os_map_platform_error__());
     }
 
@@ -69,22 +69,17 @@ os_result os_file_get_stdfile(os_file** out_file, os_stdfile stdfile) {
 os_result os_file_set_stdfile(os_stdfile stdfile, os_file* file) {
     if (!file || file->handle == INVALID_HANDLE_VALUE || file->handle == NULL) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
-    DWORD stdhandle;
-    HANDLE old_handle;
-    os_result res = get_std_handle(&stdhandle, &old_handle, stdfile);
+    DWORD stdhandle_id;
+    os_result res = get_std_handle(&stdhandle_id, NULL, stdfile);
     if (res != OS_OK) return os_set_and_return_result__(res);
 
-    if (old_handle != INVALID_HANDLE_VALUE && old_handle != NULL) {
-        CloseHandle(old_handle); // is this safe? probably not
-    }
-
-    HANDLE handle;
-    if (DuplicateHandle(GetCurrentProcess(), file->handle, GetCurrentProcess(), &handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
+    HANDLE duped_handle;
+    if (DuplicateHandle(GetCurrentProcess(), file->handle, GetCurrentProcess(), &duped_handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
         return os_set_and_return_result__(os_map_platform_error__());
     }
 
-    if (SetStdHandle(stdhandle, handle) == 0) {
-        CloseHandle(handle);
+    if (SetStdHandle(stdhandle_id, duped_handle) == 0) {
+        CloseHandle(duped_handle);
         return os_set_and_return_result__(os_map_platform_error__());
     }
 
