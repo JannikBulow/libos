@@ -71,7 +71,7 @@ LIBOS_EXPORT os_result os_file_get_stdfile(os_file** out_file, os_stdfile stdfil
 LIBOS_EXPORT os_result os_file_set_stdfile(os_stdfile stdfile, os_file* file);
 
 LIBOS_EXPORT os_result os_file_open(os_file** out_file, os_cstring path, os_file_open_intents intents);
-
+LIBOS_EXPORT os_result os_file_dup(os_file** out_file, os_file* file);
 LIBOS_EXPORT os_result os_file_close(os_file* file);
 
 LIBOS_EXPORT os_result os_file_read(os_file* file, void* buffer, os_size bytes_to_read, os_size* out_bytes_read);

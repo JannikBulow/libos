@@ -180,6 +180,32 @@ os_result os_file_open(os_file** out_file, os_cstring _path, os_file_open_intent
     return os_set_and_return_result__(OS_OK);
 }
 
+os_result os_file_dup(os_file** out_file, os_file* file) {
+    if (!out_file || !file) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
+
+    os_string new_path = os_copy_message__(file->path);
+    if (!new_path) return os_set_and_return_result__(OS_ERROR_NO_MEMORY);
+
+    os_file* new_file = malloc(sizeof(os_file));
+    if (!new_file) {
+        free(new_path);
+        return os_set_and_return_result__(OS_ERROR_NO_MEMORY);
+    }
+
+    HANDLE duped_handle;
+    if (DuplicateHandle(GetCurrentProcess(), file->handle, GetCurrentProcess(), &duped_handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
+        free(new_path);
+        free(new_file);
+        return os_set_and_return_result__(os_map_platform_error__());
+    }
+
+    new_file->handle = duped_handle;
+    new_file->path = new_path;
+
+    *out_file = new_file;
+    return os_set_and_return_result__(OS_OK);
+}
+
 os_result os_file_close(os_file* file) {
     if (!file) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
