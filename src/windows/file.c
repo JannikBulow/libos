@@ -12,6 +12,8 @@ struct os_file {
     os_string path;
 };
 
+static os_file* os_stdfiles[3] = {NULL, NULL, NULL};
+
 os_string os_copy_message__(os_cstring message);
 
 static os_result get_std_handle(DWORD* out_std_handle, HANDLE* out_handle, os_stdfile stdfile) {
@@ -52,38 +54,64 @@ static os_result os_file_from_std_handle(os_file** out_file, HANDLE handle) {
     return OS_OK;
 }
 
+static os_result os_stdfile_ensure_initialized(os_stdfile stdfile) {
+    if (stdfile >= 3) return OS_ERROR_INVALID_ARGUMENT;
+    if (os_stdfiles[stdfile] != NULL) return OS_OK;
+
+    HANDLE handle;
+    os_result res = get_std_handle(NULL, &handle, stdfile);
+    if (res != OS_OK) return res;
+
+    HANDLE duped_handle;
+    if (DuplicateHandle(GetCurrentProcess(), handle, GetCurrentProcess(), &duped_handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
+        return os_map_platform_error__();
+    }
+
+    os_file* file;
+    res = os_file_from_std_handle(&file, duped_handle);
+    if (res != OS_OK) {
+        CloseHandle(duped_handle);
+        return res;
+    }
+
+    os_stdfiles[stdfile] = file;
+    return OS_OK;
+}
+
 os_result os_file_get_stdfile(os_file** out_file, os_stdfile stdfile) {
     if (!out_file) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
-    HANDLE raw_handle;
-    os_result res = get_std_handle(NULL, &raw_handle, stdfile);
+    os_result res = os_stdfile_ensure_initialized(stdfile);
     if (res != OS_OK) return os_set_and_return_result__(res);
 
-    HANDLE duped_handle;
-    if (DuplicateHandle(GetCurrentProcess(), raw_handle, GetCurrentProcess(), &duped_handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
-        return os_set_and_return_result__(os_map_platform_error__());
-    }
-
-    return os_set_and_return_result__(os_file_from_std_handle(out_file, duped_handle));
+    *out_file = os_stdfiles[stdfile];
+    return os_set_and_return_result__(OS_OK);
 }
 
 os_result os_file_set_stdfile(os_stdfile stdfile, os_file* file) {
     if (!file || file->handle == INVALID_HANDLE_VALUE || file->handle == NULL) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
-    DWORD stdhandle_id;
-    os_result res = get_std_handle(&stdhandle_id, NULL, stdfile);
+    os_file* duped_file;
+    os_result res = os_file_dup(&duped_file, file);
     if (res != OS_OK) return os_set_and_return_result__(res);
 
-    HANDLE duped_handle;
-    if (DuplicateHandle(GetCurrentProcess(), file->handle, GetCurrentProcess(), &duped_handle, 0, FALSE, DUPLICATE_SAME_ACCESS) == 0) {
+    DWORD stdhandle_id;
+    res = get_std_handle(&stdhandle_id, NULL, stdfile);
+    if (res != OS_OK) {
+        os_file_close(duped_file);
+        return os_set_and_return_result__(res);
+    }
+
+    if (SetStdHandle(stdhandle_id, duped_file->handle) == 0) {
+        os_file_close(duped_file);
         return os_set_and_return_result__(os_map_platform_error__());
     }
 
-    if (SetStdHandle(stdhandle_id, duped_handle) == 0) {
-        CloseHandle(duped_handle);
-        return os_set_and_return_result__(os_map_platform_error__());
+    if (os_stdfiles[stdfile] != NULL) {
+        os_file_close(os_stdfiles[stdfile]);
     }
 
+    os_stdfiles[stdfile] = duped_file;
     return os_set_and_return_result__(OS_OK);
 }
 
