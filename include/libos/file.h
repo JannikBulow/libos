@@ -75,28 +75,21 @@ LIBOS_EXPORT os_result os_file_dup(os_file** out_file, os_file* file);
 LIBOS_EXPORT os_result os_file_close(os_file* file);
 
 LIBOS_EXPORT os_result os_file_read(os_file* file, void* buffer, os_size bytes_to_read, os_size* out_bytes_read);
-
 LIBOS_EXPORT os_result os_file_write(os_file* file, const void* buffer, os_size bytes_to_write, os_size* out_bytes_written);
-
 LIBOS_EXPORT os_result os_file_read_at(os_file* file, os_u64 offset, void* buffer, os_size bytes_to_read, os_size* out_bytes_read);
-
 LIBOS_EXPORT os_result os_file_write_at(os_file* file, os_u64 offset, const void* buffer, os_size bytes_to_write, os_size* out_bytes_written);
 
 LIBOS_EXPORT os_result os_file_seek(os_file* file, os_i64 offset, os_file_seek_origin origin);
-
 LIBOS_EXPORT os_result os_file_tell(os_file* file, os_size* out_position);
 
 // Don't think that this means libos does buffering. This is only to call the OS flush functions if present
 LIBOS_EXPORT os_result os_file_flush(os_file* file);
 
 LIBOS_EXPORT os_result os_file_getinfo(os_file* file, os_file_info* out_info);
-
 LIBOS_EXPORT os_result os_file_getsize(os_file* file, os_size* out_size);
 
 LIBOS_EXPORT os_result os_file_resize(os_file* file, os_size new_size);
-
 LIBOS_EXPORT os_result os_file_delete(os_cstring path);
-
 LIBOS_EXPORT os_result os_file_rename(os_cstring path, os_cstring new_path);
 
 LIBOS_EXPORT os_result os_file_get_platform_handle(os_file* file, void** out_platform_handle);
