@@ -9,7 +9,6 @@
 
 struct os_dynlib {
     HMODULE module;
-    os_bool nodelete;
 };
 
 os_result os_dynlib_load(os_dynlib** out_lib, os_cstring path, os_dynlib_load_intents intents) {
@@ -18,26 +17,29 @@ os_result os_dynlib_load(os_dynlib** out_lib, os_cstring path, os_dynlib_load_in
 
     if (intents & OS_DYNLIB_LAZY) return os_set_and_return_result__(OS_ERROR_NOT_SUPPORTED);
     if (intents & OS_DYNLIB_GLOBAL) return os_set_and_return_result__(OS_ERROR_NOT_SUPPORTED);
+    if (intents & OS_DYNLIB_NODELETE) return os_set_and_return_result__(OS_ERROR_NOT_SUPPORTED);
 
-    HANDLE heap = GetProcessHeap();
     os_i32 length = os_string_to_microsoft_string__(path, NULL, 0);
-    microsoft_string microsoft_path = HeapAlloc(heap, HEAP_GENERATE_EXCEPTIONS, length * sizeof(WCHAR));
-    os_string_to_microsoft_string__(path, microsoft_path, length);
+    microsoft_string wpath = malloc(length * sizeof(WCHAR));
+    if (!wpath) return os_set_and_return_result__(OS_ERROR_NO_MEMORY);
 
-    HMODULE module = LoadLibraryW(microsoft_path);
-    HeapFree(heap, 0, microsoft_path);
+    os_string_to_microsoft_string__(path, wpath, length);
+
+    HMODULE module = LoadLibraryW(wpath);
+    free(wpath);
     if (module == NULL) {
         return os_set_and_return_result__(os_map_platform_error__());
     }
 
-    os_dynlib* lib = HeapAlloc(heap, HEAP_GENERATE_EXCEPTIONS, sizeof(os_dynlib));
+    os_dynlib* lib = malloc(sizeof(os_dynlib));
+    if (!lib) {
+        FreeLibrary(module);
+        return os_set_and_return_result__(OS_ERROR_NO_MEMORY);
+    }
     lib->module = module;
-    lib->nodelete = intents & OS_DYNLIB_NODELETE;
 
     // No need for LIBOS_OUT__ because it has to not be NULL anyway
     *out_lib = lib;
-
-    if (lib->nodelete) return os_set_and_return_result__(-OS_ERROR_NOT_SUPPORTED);
 
     return os_set_and_return_result__(OS_OK);
 }
@@ -48,11 +50,8 @@ os_result os_dynlib_unload(os_dynlib* lib) {
     HANDLE heap = GetProcessHeap();
 
     HMODULE module = lib->module;
-    os_bool nodelete = lib->nodelete;
 
     HeapFree(heap, 0, lib);
-
-    if (nodelete) return os_set_and_return_result__(OS_OK);
 
     BOOL result = FreeLibrary(module);
     if (result == 0) {
