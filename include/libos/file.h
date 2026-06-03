@@ -16,42 +16,42 @@ extern "C" {
 typedef struct os_file os_file;
 
 enum os_stdfile_enum {
-    OS_STDIN = 0,
-    OS_STDOUT = 1,
-    OS_STDERR = 2
+    OS_STDIN    = 0,
+    OS_STDOUT   = 1,
+    OS_STDERR       = 2
 };
 
 enum os_file_open_intents_enum {
-    OS_FILE_READ = 1 << 0,
-    OS_FILE_WRITE = 1 << 1,
-    OS_FILE_APPEND = 1 << 2,
+    OS_FILE_READ                = 1 << 0,
+    OS_FILE_WRITE               = 1 << 1,
+    OS_FILE_APPEND              = 1 << 2,
 
-    OS_FILE_CREATE = 1 << 3,
-    OS_FILE_TRUNCATE = 1 << 4,
-    OS_FILE_EXCLUSIVE = 1 << 5,
+    OS_FILE_CREATE              = 1 << 3,
+    OS_FILE_TRUNCATE            = 1 << 4,
+    OS_FILE_EXCLUSIVE           = 1 << 5,
 
-    OS_FILE_TEMPORARY = 1 << 6,
+    OS_FILE_TEMPORARY           = 1 << 6,
 
-    OS_FILE_RANDOM_ACCESS = 1 << 7,
-    OS_FILE_SEQUENTIAL = 1 << 8,
+    OS_FILE_RANDOM_ACCESS       = 1 << 7,
+    OS_FILE_SEQUENTIAL          = 1 << 8,
 
-    OS_FILE_DIRECT = 1 << 9,
-    OS_FILE_SYNC = 1 << 10,
+    OS_FILE_DIRECT              = 1 << 9,
+    OS_FILE_SYNC                = 1 << 10,
 
-    OS_FILE_DELETE_ON_CLOSE = 1 << 11,
+    OS_FILE_DELETE_ON_CLOSE     = 1 << 11,
 };
 
 enum os_file_seek_origin_enum {
-    OS_FILE_SEEK_BEGIN = 1 << 0,
-    OS_FILE_SEEK_CURRENT = 1 << 1,
-    OS_FILE_SEEK_END = 1 << 2,
+    OS_FILE_SEEK_BEGIN      = 1 << 0,
+    OS_FILE_SEEK_CURRENT    = 1 << 1,
+    OS_FILE_SEEK_END        = 1 << 2,
 };
 
 enum os_file_flags_enum { // TODO: real flags
-    OS_FILE_FLAG_DIRECTORY = 1 << 0,
-    OS_FILE_FLAG_READONLY = 1 << 1,
-    OS_FILE_FLAG_HIDDEN = 1 << 2,
-    OS_FILE_FLAG_SYMLINK = 1 << 3,
+    OS_FILE_FLAG_DIRECTORY  = 1 << 0,
+    OS_FILE_FLAG_READONLY   = 1 << 1,
+    OS_FILE_FLAG_HIDDEN     = 1 << 2,
+    OS_FILE_FLAG_SYMLINK    = 1 << 3,
 };
 
 typedef struct os_file_info {
