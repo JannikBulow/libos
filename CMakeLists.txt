@@ -29,7 +29,8 @@ set(WINDOWS_SOURCES
     src/windows/memory.c
 )
 
-set(UNIX_SOURCES)
+set(UNIX_SOURCES
+    src/unix/dynlib.c)
 
 if(WIN32)
     set(SOURCES ${COMMON_SOURCES} ${WINDOWS_SOURCES})
