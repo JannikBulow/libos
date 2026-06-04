@@ -10,7 +10,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-
 #endif
 
 typedef struct os_file os_file;
@@ -42,9 +41,9 @@ enum os_file_open_intents_enum {
 };
 
 enum os_file_seek_origin_enum {
-    OS_FILE_SEEK_BEGIN      = 1 << 0,
-    OS_FILE_SEEK_CURRENT    = 1 << 1,
-    OS_FILE_SEEK_END        = 1 << 2,
+    OS_FILE_SEEK_BEGIN,
+    OS_FILE_SEEK_CURRENT,
+    OS_FILE_SEEK_END,
 };
 
 enum os_file_flags_enum { // TODO: real flags
