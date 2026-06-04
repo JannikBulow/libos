@@ -32,6 +32,7 @@ set(WINDOWS_SOURCES
 set(UNIX_SOURCES
     src/unix/dynlib.c
     src/unix/error.c
+    src/unix/file.c
 )
 
 if(WIN32)
@@ -110,4 +111,9 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
     target_compile_definitions(libos-shared PRIVATE BITS_32=1)
     target_compile_definitions(libos-static PRIVATE BITS_32=1)
+endif()
+
+if(UNIX)
+    target_compile_definitions(libos-shared PRIVATE _GNU_SOURCE)
+    target_compile_definitions(libos-static PRIVATE _GNU_SOURCE)
 endif()
