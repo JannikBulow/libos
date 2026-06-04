@@ -415,7 +415,7 @@ os_result os_file_resize(os_file* file, os_size new_size) {
 
     LARGE_INTEGER zero = {0};
     LARGE_INTEGER current_position = {0};
-    if (!SetFilePointerEx(file->handle, zero, &current_position, FILE_CURRENT) == 0) {
+    if (SetFilePointerEx(file->handle, zero, &current_position, FILE_CURRENT) == 0) {
         return os_set_and_return_result__(os_map_platform_error__());
     }
 
