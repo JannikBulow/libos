@@ -9,6 +9,11 @@
 
 #include "libos/api.h"
 
+#ifndef PLATFORM_WINDOWS
+#include <sys/types.h>
+#endif
+
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
