@@ -30,7 +30,9 @@ set(WINDOWS_SOURCES
 )
 
 set(UNIX_SOURCES
-    src/unix/dynlib.c)
+    src/unix/dynlib.c
+    src/unix/error.c
+)
 
 if(WIN32)
     set(SOURCES ${COMMON_SOURCES} ${WINDOWS_SOURCES})
