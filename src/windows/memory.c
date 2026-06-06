@@ -88,6 +88,8 @@ static os_result translate_protect_intents(DWORD* out_flags, os_mem_protect_inte
 }
 
 os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size, os_mem_alloc_intents alloc_intents, os_mem_protect_intents protect_intents) {
+    if (!out_pointer) return OS_ERROR_INVALID_ARGUMENT;
+
     DWORD alloc = 0;
     DWORD prot = 0;
 
