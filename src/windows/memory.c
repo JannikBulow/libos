@@ -88,7 +88,7 @@ static os_result translate_protect_intents(DWORD* out_flags, os_mem_protect_inte
 }
 
 os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size, os_mem_alloc_intents alloc_intents, os_mem_protect_intents protect_intents) {
-    if (!out_pointer) return OS_ERROR_INVALID_ARGUMENT;
+    if (!out_pointer || size == 0) return OS_ERROR_INVALID_ARGUMENT;
 
     DWORD alloc = 0;
     DWORD prot = 0;
@@ -119,6 +119,8 @@ os_result os_mem_allocate(void** out_pointer, void* start_address, os_size size,
 }
 
 os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_intents) {
+    if (!address || size == 0) return OS_ERROR_INVALID_ARGUMENT;
+
     BOOL res;
     if (free_intents == OS_MEM_DECOMMIT) {
         res = VirtualFree(address, size, MEM_DECOMMIT);
@@ -136,6 +138,8 @@ os_result os_mem_free(void* address, os_size size, os_mem_free_intents free_inte
 }
 
 os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents protect_intents) {
+    if (!address || size == 0) return OS_ERROR_INVALID_ARGUMENT;
+
     DWORD prot = 0;
     DWORD old_prot;
 
