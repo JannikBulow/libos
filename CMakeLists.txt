@@ -33,6 +33,7 @@ set(UNIX_SOURCES
     src/unix/dynlib.c
     src/unix/error.c
     src/unix/file.c
+    src/unix/memory.c
 )
 
 if(WIN32)
