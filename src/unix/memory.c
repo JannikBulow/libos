@@ -185,7 +185,7 @@ os_result os_mem_protect(void* address, os_size size, os_mem_protect_intents pro
     if (!address || size == 0) return os_set_and_return_result__(OS_ERROR_INVALID_ARGUMENT);
 
     int prot = translate_protect_intents(protect_intents);
-    if (mprotect(address, size, protect_intents) != 0) return os_set_and_return_result__(os_map_platform_error__());
+    if (mprotect(address, size, prot) != 0) return os_set_and_return_result__(os_map_platform_error__());
 
     return os_set_and_return_result__(OS_OK);
 }
