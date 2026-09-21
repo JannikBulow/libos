@@ -61,6 +61,8 @@ static void parse_meminfo(const struct meminfo_entry* entries, os_size count) {
                 }
             }
         }
+
+        line = end + 1;
     }
 }
 
