@@ -40,8 +40,15 @@ typedef os_u32 os_mem_protect_intents;
 
 LIBOS_EXPORT void os_mem_init(void);
 
+LIBOS_EXPORT os_size os_mem_getphysicaltotal(void);
+LIBOS_EXPORT os_size os_mem_getphysicalavailable(void);
+
+LIBOS_EXPORT os_size os_mem_getprocessresident(void);
+LIBOS_EXPORT os_size os_mem_getprocessvirtual(void);
+
 LIBOS_EXPORT os_size os_mem_getpagesize(void);
 LIBOS_EXPORT os_size os_mem_getlargepagesize(void);
+
 LIBOS_EXPORT os_size os_mem_aligntopagesize(os_size x);
 LIBOS_EXPORT os_size os_mem_aligntolargepagesize(os_size x);
 

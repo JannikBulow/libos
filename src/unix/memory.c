@@ -9,8 +9,86 @@
 #include <string.h>
 #include <unistd.h>
 
-static os_size page_size;
-static os_size large_page_size;
+#ifdef PLATFORM_LINUX
+struct meminfo_entry {
+    const char* key;
+    os_size* value;
+};
+
+struct statm_result {
+    os_size size;
+    os_size resident;
+};
+
+static void parse_meminfo(const struct meminfo_entry* entries, os_size count) {
+    int meminfo = open("/proc/meminfo", O_RDONLY);
+    if (meminfo < 0) {
+        return;
+    }
+
+    //TODO: loop until file is fully read. this should suffice for now but just in case it won't for other people yk
+    char buf[8192];
+    ssize_t r = read(meminfo, buf, sizeof(buf) - 1);
+    close(meminfo);
+    if (r <= 0) {
+        return;
+    }
+
+    buf[r] = '\0';
+
+    char* line = buf;
+    while (*line) {
+        char* end = strchr(line, '\n');
+        if (end) *end = '\0';
+
+        char* colon = strchr(line, ':');
+        if (colon) {
+            *colon = '\0';
+
+            char* value = colon + 1;
+            while (*value == ' ' || *value == '\t') {
+                value++;
+            }
+
+            os_size number = strtoull(value, NULL, 10);
+            number *= 1024; // should we always assume kB?
+
+            for (os_size i = 0; i < count; i++) {
+                const struct meminfo_entry* entry = &entries[i];
+                if (strcmp(line, entry->key) == 0) {
+                    *entry->value = number;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+static void parse_statm(struct statm_result* result) {
+    int statm = open("/proc/self/statm", O_RDONLY);
+    if (statm < 0) {
+        return;
+    }
+
+    char buf[256];
+    ssize_t r = read(statm, buf, sizeof(buf) - 1);
+    close(statm);
+    if (r <= 0) {
+        return;
+    }
+
+    buf[r] = '\0';
+
+    char* cursor = buf;
+    result->size = strtoull(cursor, &cursor, 10);
+    result->resident = strtoull(cursor, &cursor, 10);
+}
+#endif
+
+static os_size physical_total = 0;
+
+static os_size page_size = 0;
+static os_size large_page_size = 0;
 
 #ifndef LIBOS_OPT_ASSUME_POW2_PAGESIZE
 static os_size (*aligntopagesize)(os_size, os_size) = NULL;
@@ -28,35 +106,17 @@ static os_size alignto_pow2(os_size x, os_size a) {
 
 void os_mem_init(void) {
     page_size = sysconf(_SC_PAGESIZE);
+    physical_total = sysconf(_SC_PHYS_PAGES) * page_size;
 
-    // time for cancer code because unix is good
-    int meminfo = open("/proc/meminfo", O_RDONLY);
-    if (meminfo < 0) {
-        large_page_size = 0;
-        goto skip_large_page_size;
-    }
+    // this is linux only, not unix. will add other unix os later
+    struct meminfo_entry meminfo_entries[] = {
+        {
+            "Hugepagesize",
+            &large_page_size
+        }
+    };
 
-    //TODO: loop until file is fully read. this should suffice for now but just in case it won't for other people yk
-    char buf[8192];
-    ssize_t r = read(meminfo, buf, sizeof(buf) - 1);
-    if (r <= 0) {
-        close(meminfo);
-        large_page_size = 0;
-        goto skip_large_page_size;
-    }
-
-    buf[r] = '\0';
-
-    char* line = strstr(buf, "Hugepagesize:");
-    if (line) {
-        large_page_size = strtoull(line + strlen("Hugepagesize:"), NULL, 10);
-    } else {
-        large_page_size = 0;
-    }
-
-    close(meminfo);
-
-    skip_large_page_size:
+    parse_meminfo(meminfo_entries, sizeof(meminfo_entries) / sizeof(meminfo_entries[0]));
 
 #ifndef LIBOS_OPT_ASSUME_POW2_PAGESIZE
     if (page_size && ((page_size & (page_size - 1)) == 0)) {
@@ -70,7 +130,38 @@ void os_mem_init(void) {
     } else {
         aligntolargepagesize = alignto_normal;
     }
+#else
+    return;
 #endif
+}
+
+os_size os_mem_getphysicaltotal(void) {
+    return physical_total;
+}
+
+os_size os_mem_getphysicalavailable(void) {
+    os_size available = 0;
+    struct meminfo_entry meminfo_entries[] = {
+        {
+            "MemAvailable",
+            &available
+        }
+    };
+    parse_meminfo(meminfo_entries, sizeof(meminfo_entries) / sizeof(meminfo_entries[0]));
+
+    return available;
+}
+
+os_size os_mem_getprocessresident(void) {
+    struct statm_result statm;
+    parse_statm(&statm);
+    return statm.resident * page_size;
+}
+
+os_size os_mem_getprocessvirtual(void) {
+    struct statm_result statm;
+    parse_statm(&statm);
+    return statm.size * page_size;
 }
 
 os_size os_mem_getpagesize(void) {
