@@ -5,6 +5,7 @@
 #include "libos/file.h"
 
 #include <fcntl.h>
+#include <io.h>
 #include <stdlib.h>
 
 struct os_file {
